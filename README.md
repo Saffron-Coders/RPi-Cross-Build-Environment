@@ -1,11 +1,34 @@
 # RPi-Cross-Build-Environment
 An automated cross compilation environment used for cross compiling programs for the Raspbian OS.
 
-*** Details of the DevEnv filesystem ***
+***Guide to setup the development environment***
 
-DevEnv
+1. Run the following sequence of commands as shown below:
+```
+	$ export TARGET_IP=<your-rpi-ipaddr>
+	$ export TARGET_USR=<username-on-your-rpi>
+	$ ./configure.sh
+	$ ./rsync_all.sh
+```
+2. In your target device(RPi), run the following commands:
+```
+	$ echo "/usr/local/misc/lib" | sudo tee /etc/ld.so.conf.d/misc.conf
+	$ sudo ldconfig
+```
+You basic build environment is ready now
+
+**Points to remember**
+* Always run the following command after rsync_all.sh:
+```
+	$ ./sysroot-relativelinks.py sysroot
+```
+
+**The filesystem after a successful setup**
+
+```
+${root-dir}
   |
-  |-- Packages : Downloads directory for all packages required for building the Aura projects.
+  |-- Packages : Potential downloads directory for all packages required for building your projects.
   |
   |-- misc : Directory for sync to the target device. This will contain the output binary and lib files
   |          that are cross-built in the host machine and synced to the target device separately. Packages, libs
@@ -30,25 +53,4 @@ DevEnv
   |-- rsync_all.sh : Script to sync the sysroot directory from the target device.
   |
   |-- rsync_misc.sh : Script to sync the misc directory to the target device.
-  
-*** Guide to setup the development environment ***
-
-1. Create the above mentioned directory tree, except the 4th one.
-
-2. Set IP address of target and run rsync_all.sh. The IP can be set in the file itself.
-
-3. In target device, create a directory /usr/local/misc and set owner to leo:pi or whatever username it is in future:
-   $ sudo mkdir /usr/local/misc
-   $ sudo chown leo:pi /usr/local/misc
-
-4. Run the script rsync_misc.sh.
-
-5. In target device, run the following commands:
-   $ echo "/usr/local/misc/lib" | sudo tee /etc/ld.so.conf.d/misc.conf
-   $ sudo ldconfig
-   
-   --- You are good to go now ---
-
-*** Points to remember
-1. Always run the following command after rsync_all.sh:
-	$ ./sysroot-relativelinks.py sysroot
+```
